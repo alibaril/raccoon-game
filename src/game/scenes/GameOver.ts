@@ -6,6 +6,7 @@ export class GameOver extends Scene
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     gameOverText : Phaser.GameObjects.Text;
+    playAgainText : Phaser.GameObjects.Text;
 
     constructor ()
     {
@@ -21,10 +22,20 @@ export class GameOver extends Scene
         this.background.setAlpha(0.5);
 
         this.gameOverText = this.add.text(512, 384, 'Game Over', {
-            fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',
+            fontFamily: 'Helvetica', fontSize: 64, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
+
+        this.playAgainText = this.add.text(512, 400, 'Play Again', {
+            fontFamily: 'Helvetica', fontSize: 18, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center',
+        }).setOrigin(0.5).setDepth(100).setInteractive({ cursor: 'pointer' });
+
+        this.playAgainText.on('pointerdown', () => {
+            this.scene.start('MainMenu');
+        }, this);
         
         EventBus.emit('current-scene-ready', this);
     }
