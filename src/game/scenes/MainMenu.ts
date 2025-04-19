@@ -22,7 +22,7 @@ export class MainMenu extends Scene
         this.logo = this.add.image(512, 200, 'logo').setDepth(100);
 
         this.title = this.add.text(512, 300, 'Start', {
-            fontFamily: 'Helvetica', fontSize: 38, color: '#363737',
+            fontFamily: 'Helvetica', fontSize: 38, color: '#111111',
             align: 'center'
         }).setOrigin(0.5).setDepth(100).setInteractive({ cursor: 'pointer' });
 
