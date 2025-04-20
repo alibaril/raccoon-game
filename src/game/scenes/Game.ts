@@ -1,5 +1,8 @@
+import { centerX, centerY } from '../constants';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
+
+const gameDuration = 80000;
 
 export class Game extends Scene
 {
@@ -7,7 +10,6 @@ export class Game extends Scene
     background: Phaser.GameObjects.Image;
     triggerTimer: Phaser.Time.TimerEvent;
     gameTimer: Phaser.Time.TimerEvent;
-    windSprite: Phaser.GameObjects.Sprite;
     leftKeyDown: boolean;
     rightKeyDown: boolean;
     backgroundLeft: Phaser.GameObjects.Image;
@@ -23,23 +25,19 @@ export class Game extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
-        this.background = this.add.image(512, 384, 'background');
-        this.backgroundLeft = this.add.image(512, 384, 'bgleft').setVisible(false);
-        this.backgroundRight = this.add.image(512, 384, 'bgright').setVisible(false);
-
-        this.windSprite = this.physics.add.sprite(512, 384, 'star').setVisible(false);
+        this.background = this.add.image(centerX, centerY, 'background');
+        this.backgroundLeft = this.add.image(centerX, centerY, 'bgleft').setVisible(false);
+        this.backgroundRight = this.add.image(centerX, centerY, 'bgright').setVisible(false);
 
         let leftKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
 
         let rightKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         rightKey?.on('down', () => {
-            console.log(' right!!');
             this.rightKeyDown = true;
         });
 
         leftKey?.on('down', () => {
-            console.log(' left!!');
             this.leftKeyDown = true;
         });
 
@@ -53,9 +51,25 @@ export class Game extends Scene
         this.gameTimer = this.time.addEvent({
             callback: this.changeScene,
             callbackScope: this,
-            delay: 80000,
+            delay: gameDuration,
             loop: false
         });
+
+        // This code below sets up our "sun dial" path and sun
+        const graphics = this.add.graphics();
+
+        const p0 = new Phaser.Math.Vector2(700, 550);
+        const p1 = new Phaser.Math.Vector2(700, 400);
+        const p2 = new Phaser.Math.Vector2(900, 400);
+        const p3 = new Phaser.Math.Vector2(900, 550);
+
+        const curve = new Phaser.Curves.CubicBezier(p0, p1, p2, p3);
+
+        graphics.lineStyle(2, 0xffffff, 1);
+        curve.draw(graphics, 64);
+
+        const sun = this.add.follower(curve, 700, 550, 'star');
+        sun.startFollow(gameDuration);
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -73,7 +87,9 @@ export class Game extends Scene
         this.rightKeyDown = false;
         this.leftKeyDown = false;
         const remainingSec = this.gameTimer.getOverallRemainingSeconds();
-        const delay = remainingSec > 30 ? Phaser.Math.Between(3000, 5000) : Phaser.Math.Between(2000, 4000);
+
+        // Add some toughness as the game progresses: make the delay between wind shorter
+        const delay = remainingSec > 30 ? Phaser.Math.Between(1200, 2000) : Phaser.Math.Between(1000, 1800);
 
         if (remainingSec > 4) {
             setTimeout(() => {
@@ -88,13 +104,12 @@ export class Game extends Scene
                         loop: false
                     });
                 }
-            }, 1000);
+            }, 800);
         }
         
     }
 
     changeScene() {
-        console.log(' hello!!');
         this.scene.start('GameOver', { win: true });
     }
 }
