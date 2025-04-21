@@ -37,6 +37,11 @@ export class Preloader extends Scene
         this.load.image('star', 'star.png');
         this.load.image('bgleft', 'bgleft.png');
         this.load.image('bgright', 'bgright.png');
+
+        this.load.spritesheet('raccoon', 
+            'spritesheet.png',
+            { frameWidth: 32, frameHeight: 32 }
+        );
     }
 
     create ()

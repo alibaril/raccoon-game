@@ -2,7 +2,7 @@ import { centerX, centerY } from '../constants';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 
-const gameDuration = 80000;
+const gameDuration = 100000;
 
 export class Game extends Scene
 {
@@ -14,6 +14,7 @@ export class Game extends Scene
     rightKeyDown: boolean;
     backgroundLeft: Phaser.GameObjects.Image;
     backgroundRight: Phaser.GameObjects.Image;
+    raccoon: Phaser.GameObjects.Sprite;
 
     constructor ()
     {
@@ -29,16 +30,40 @@ export class Game extends Scene
         this.backgroundLeft = this.add.image(centerX, centerY, 'bgleft').setVisible(false);
         this.backgroundRight = this.add.image(centerX, centerY, 'bgright').setVisible(false);
 
+        this.raccoon = this.physics.add.sprite(centerX, centerY - 100, 'raccoon').setScale(2).refreshBody();
+
+        this.anims.create({
+            key: 'left',
+            frames: [ { key: 'raccoon', frame: 0 } ],
+            frameRate: 1
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: [ { key: 'raccoon', frame: 1 } ],
+            frameRate: 1
+        });
+
+        this.anims.create({
+            key: 'center',
+            frames: [ { key: 'raccoon', frame: 2 } ],
+            frameRate: 1
+        });
+
+        this.raccoon.anims.play('center', true);
+
         let leftKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
 
         let rightKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         rightKey?.on('down', () => {
             this.rightKeyDown = true;
+            this.raccoon.anims.play('right');
         });
 
         leftKey?.on('down', () => {
             this.leftKeyDown = true;
+            this.raccoon.anims.play('left');
         });
 
         this.triggerTimer = this.time.addEvent({
@@ -89,14 +114,15 @@ export class Game extends Scene
         const remainingSec = this.gameTimer.getOverallRemainingSeconds();
 
         // Add some toughness as the game progresses: make the delay between wind shorter
-        const delay = remainingSec > 30 ? Phaser.Math.Between(1200, 2000) : Phaser.Math.Between(1000, 1800);
+        const delay = remainingSec > 50 ? Phaser.Math.Between(1000, 1800) : Phaser.Math.Between(800, 1600);
 
-        if (remainingSec > 4) {
+        if (remainingSec > 2) {
             setTimeout(() => {
                 if ((isRight && !this.rightKeyDown) || (!isRight && !this.leftKeyDown)) {
                     this.scene.start('GameOver', { win: false });
                 } else {
                     background.setVisible(false);
+                    this.raccoon.anims.play('center');
                     this.triggerTimer = this.time.addEvent({
                         callback: this.timerEvent,
                         callbackScope: this,
@@ -104,7 +130,7 @@ export class Game extends Scene
                         loop: false
                     });
                 }
-            }, 800);
+            }, 600);
         }
         
     }
