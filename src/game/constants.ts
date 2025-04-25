@@ -1,2 +1,2 @@
-export const centerX = 512;
-export const centerY = 384;
+export const centerX = 450;
+export const centerY = 287;

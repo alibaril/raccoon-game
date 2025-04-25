@@ -6,8 +6,10 @@ export class GameOver extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
-    gameOverText : Phaser.GameObjects.Text;
+    logo: Phaser.GameObjects.Image;
     playAgainText : Phaser.GameObjects.Text;
+    winSound: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound;
+    loseSound: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound;
     win: boolean;
 
     constructor ()
@@ -21,27 +23,24 @@ export class GameOver extends Scene
 
     create ()
     {
-        this.camera = this.cameras.main
-        this.camera.setBackgroundColor(0xff0000);
+        this.camera = this.cameras.main;
 
         this.background = this.add.image(centerX, centerY, 'background');
-        this.background.setAlpha(0.5);
 
-        this.gameOverText = this.add.text(centerX, 284, this.win ? 'Good job!' : 'Game Over', {
-            fontFamily: 'Helvetica', fontSize: 64, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
+        this.logo = this.add.image(centerX, centerY, this.win ? 'win' : 'lose').setDepth(100).setInteractive({ cursor: 'pointer' });
 
-        this.playAgainText = this.add.text(centerX, 400, 'Play Again', {
-            fontFamily: 'Helvetica', fontSize: 18, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center',
-        }).setOrigin(0.5).setDepth(100).setInteractive({ cursor: 'pointer' });
-
-        this.playAgainText.on('pointerdown', () => {
+        this.logo.on('pointerdown', () => {
             this.scene.start('MainMenu');
         }, this);
+
+        this.winSound = this.sound.add('yay');
+        this.loseSound = this.sound.add('fall');
+
+        if (this.win) {
+            this.winSound.play();
+        } else {
+            this.loseSound.play();
+        }
         
         EventBus.emit('current-scene-ready', this);
     }

@@ -33,14 +33,21 @@ export class Preloader extends Scene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
-        this.load.image('bgleft', 'bgleft.png');
-        this.load.image('bgright', 'bgright.png');
+        this.load.image('win', 'win.png');
+        this.load.image('lose', 'lose.png');
+        this.load.image('sun', 'sun.png');
+        this.load.image('start', 'start.png');
+        this.load.image('bgleft', 'bgL.png');
+        this.load.image('bgright', 'bgR.png');
+
+        this.load.audio('wind', [ 'windSound.wav' ]);
+        this.load.audio('chickadees', [ 'chickadees.flac' ]);
+        this.load.audio('fall', [ 'fall.mp3' ]);
+        this.load.audio('yay', [ 'yay.mp3' ]);
 
         this.load.spritesheet('raccoon', 
             'spritesheet.png',
-            { frameWidth: 32, frameHeight: 32 }
+            { frameWidth: 200, frameHeight: 350 }
         );
     }
 
